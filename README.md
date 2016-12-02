@@ -1,2 +1,3 @@
 # pick-my-champion
-statistics based champion select aid
+
+Tool to inform the user of champion with the best possible win-rate for their current champion select!
