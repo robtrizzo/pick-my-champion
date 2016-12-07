@@ -1,0 +1,142 @@
+.championPortrait {
+    position: relative;
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+    border: 1px solid red;
+}
+.championDropArea {
+    width: 90px;
+    height: 90px;
+    float: left;
+    margin: 2px;
+    border: 1px solid #000;
+    outline: 1px solid transparent
+}
+.highlight {
+    border: 1px solid blue
+}
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+body {
+    font: 24px Helvetica;
+    background: #999999;
+}
+
+#main {
+    min-height: 600px;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-flow: row;
+}
+
+#bans {
+    min-height: 120px;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-flow: row;
+}
+
+
+#bans > team1bans {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #cccc33;
+    border-radius: 7pt;
+    background: #dddd88;
+    flex: 3 1 50%;
+    order: 1;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+#bans > team2bans {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #cccc33;
+    border-radius: 7pt;
+    background: #dddd88;
+    flex: 3 1 50%;
+    order: 2;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+
+#main > championList {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #cccc33;
+    border-radius: 7pt;
+    background: #dddd88;
+    flex: 3 1 60%;
+    order: 2;
+}
+
+#main > team1picks {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #8888bb;
+    border-radius: 7pt;
+    background: #ccccff;
+    flex: 1 6 15%;
+    order: 1;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+#main > team2picks {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #8888bb;
+    border-radius: 7pt;
+    background: #ccccff;
+    flex: 1 6 15%;
+    order: 3;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+header {
+    display: block;
+    margin: 4px;
+    padding: 5px;
+    min-height: 100px;
+    border: 1px solid #eebb55;
+    border-radius: 7pt;
+    background: #ffeebb;
+}
+
+footer {
+    display: block;
+    margin: 4px;
+    padding: 5px;
+    min-height: 100px;
+    border: 1px solid #eebb55;
+    border-radius: 7pt;
+    background: #ffeebb;
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/picker.css">
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script>
+$(document).ready(function() {
+  loadPortraits();
+
+  $(".championPortrait").draggable({
+    scroll: false,
+    revert: 'invalid',
+    stack: false,
+    cursor: "pointer",
+    drag: function(event, ui) {
+      $(".championDropArea").removeClass("highlight");
+    }
+  });
+  $(".championDropArea").droppable({
+    accept: ".championPortrait",
+    drop: function(event, ui) {
+      var $this = $(this);
+      $(".highlight").removeClass("highlight");
+      $this.addClass("highlight");
+      ui.draggable.position({
+        my: "center",
+        at: "center",
+        of: $this,
+        using: function(pos) {
+          $(this).animate(pos, "slow", "linear");
+        }
+      });
+    }
+  });
+});
+
+
+//$(document).ready( function () {
+//  loadImages();
+//});
+
+function loadPortraits() {
+    dir = '/static/img/champion-portraits';
+    $.ajax({
+        url: '/scripts/listDir.php',
+        type: 'post',
+        dataType: 'json',
+        data : { dir_path: dir},
+        success : function(response) {
+            console.log("hello");
+            console.log(response);
+            loadImage(dir, response);
+        },
+        error:function(exception){
+            console.log('Exeption:'+JSON.stringify(exception));
+        }
+    });
+};
+
+function loadImage(dir, img_fn) {
+    console.log(dir);
+    console.log(img_fn);
+    var img = document.createElement("img");
+    img.src = "/static/img/champion-portraits/Aatrox.png";
+    img.id = "aatrox";
+    img.className = "championPortrait";
+    var src = document.getElementById("championList");
+    src.appendChild(img);
+}
+
+    </script>
+</head>
+<body>
+<!-- <header>header</header> -->
+<div id='bans'>
+    <team1bans>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+    </team1bans>
+    <team2bans>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+    </team2bans>
+</div>
+<div id='main'>
+    <championList id="championList">
+    </championList>
+    <team1picks>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+    </team1picks>
+    <team2picks>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+        <div class="championDropArea"></div>
+    </team2picks>
+</div>
+<footer>footer</footer>
+</body>
+</html>
+
+
+<!--
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Testing</title>
+    <style>
+.item {
+  position: relative;
+  margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  border: 1px solid red;
+}
+.droparea {
+}
+.championDropArea {
+  width: 90px;
+  height: 90px;
+  float: left;
+  margin: 2px;
+  border: 1px solid #000;
+  outline: 1px solid transparent
+}
+.highlight {
+  border: 1px solid blue
+}
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    width: 140px;
+    height: 1000px;
+    background-color: lightgrey;
+}
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+    </style>
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script>
+$(document).ready(function() {
+  $(".item").draggable({
+    scroll: false,
+    revert: 'invalid',
+    stack: false,
+    cursor: "pointer",
+    drag: function(event, ui) {
+      $(".droparea").removeClass("highlight");
+    }
+  });
+  $(".droparea").droppable({
+    accept: ".item",
+    drop: function(event, ui) {
+      var $this = $(this);
+      $(".highlight").removeClass("highlight");
+      $this.addClass("highlight");
+      ui.draggable.position({
+        my: "center",
+        at: "center",
+        of: $this,
+        using: function(pos) {
+          $(this).animate(pos, "slow", "linear");
+        }
+      });
+    }
+  });
+});
+
+    </script>
+</head>
+<body>
+
+<div class="flex-container">
+    <div class="championDropArea"></div>
+    <div class="droparea championDropArea"><img src="champion-portraits/Aatrox.png"></div>
+    <div class="droparea championDropArea"><img src="champion-portraits/Bard.png"></div>
+    <div class="droparea championDropArea"><img src="champion-portraits/Lux.png"></div>
+</div>
+<div class="item"> </div>
+</body>
+</html>
+-->

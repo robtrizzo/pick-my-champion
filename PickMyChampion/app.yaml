@@ -7,3 +7,5 @@ handlers:
 - url: /.*
   script: _go_app
 
+- url: /css
+  static_dir: css
