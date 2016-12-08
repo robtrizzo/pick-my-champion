@@ -41,29 +41,25 @@ $(document).ready(function() {
 //});
 
 function loadPortraits() {
-    dir = '/static/img/champion-portraits';
+    dir = '/static/img/champion-portraits/';
     $.ajax({
-        url: '/scripts/listDir.php',
+        url: '/scripts/go/listDir',
         type: 'post',
-        dataType: 'json',
+        dataType: 'text',
         data : { dir_path: dir},
         success : function(response) {
-            console.log("hello");
-            console.log(response);
-            loadImage(dir, response);
-        },
-        error:function(exception){
-            console.log('Exeption:'+JSON.stringify(exception));
+            imgs = response.split(",");
+            for(i = 0; i < imgs.length; i++){
+                loadImage(dir, imgs[i]);
+            }
         }
     });
 };
 
 function loadImage(dir, img_fn) {
-    console.log(dir);
-    console.log(img_fn);
     var img = document.createElement("img");
-    img.src = "/static/img/champion-portraits/Aatrox.png";
-    img.id = "aatrox";
+    img.src = dir + "/" + img_fn;
+    img.id = img_fn.substr(0, img_fn.lastIndexOf('.'));;
     img.className = "championPortrait";
     var src = document.getElementById("championList");
     src.appendChild(img);
