@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="/static/css/picker.css">
-    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
     <script>
 $(document).ready(function() {
   loadPortraits();
@@ -57,12 +57,42 @@ function loadPortraits() {
 };
 
 function loadImage(dir, img_fn) {
+    var div = document.createElement("div");
+    div.className = "championDropArea";
+    $(div).droppable({
+        accept: ".championPortrait",
+        drop: function(event, ui) {
+          var $this = $(this);
+          $(".highlight").removeClass("highlight");
+          $this.addClass("highlight");
+          ui.draggable.position({
+            my: "center",
+            at: "center",
+            of: $this,
+            using: function(pos) {
+              $(this).animate(pos, "slow", "linear");
+            }
+          });
+        }
+    });
+
     var img = document.createElement("img");
     img.src = dir + "/" + img_fn;
     img.id = img_fn.substr(0, img_fn.lastIndexOf('.'));;
     img.className = "championPortrait";
+    $(img).draggable({
+        scroll: false,
+        revert: 'invalid',
+        stack: false,
+        cursor: "pointer",
+        drag: function(event, ui) {
+          $(".championDropArea").removeClass("highlight");
+        }
+    });
     var src = document.getElementById("championList");
-    src.appendChild(img);
+    div.appendChild(img);
+    src.appendChild(div);
+
 }
 
     </script>

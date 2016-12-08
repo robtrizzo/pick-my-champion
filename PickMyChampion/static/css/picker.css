@@ -1,8 +1,8 @@
 .championPortrait {
     position: relative;
     margin: 0 auto;
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     border: 1px solid red;
 }
 .championDropArea {
@@ -83,6 +83,14 @@ body {
     background: #dddd88;
     flex: 3 1 60%;
     order: 2;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
 #main > team1picks {
