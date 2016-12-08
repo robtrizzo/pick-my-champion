@@ -5,32 +5,35 @@ $(document).ready(function() {
 });
 
 function makeDraggable() {
-  $(".championPortrait").draggable({
-    scroll: false,
-    revert: 'invalid',
-    stack: false,
-    cursor: "pointer",
-    drag: function(event, ui) {
-      $(".championDropArea").removeClass("highlight");
-    }
-  });
+    $(".championPortrait").draggable({
+        scroll: false,
+        revert: 'invalid',
+        stack: false,
+        cursor: "pointer",
+        drag: function(event, ui) {
+            $(".championDropArea").removeClass("highlight");
+        }
+    });
 };
 
 function makeDroppable() {
     $(".championDropArea").droppable({
         accept: ".championPortrait",
         drop: function(event, ui) {
-          var $this = $(this);
-          $(".highlight").removeClass("highlight");
-          $this.addClass("highlight");
-          ui.draggable.position({
-            my: "center",
-            at: "center",
-            of: $this,
-            using: function(pos) {
-              $(this).animate(pos, "slow", "linear");
-            }
-          });
+            var $this = $(this);
+            $(".highlight").removeClass("highlight");
+            $this.addClass("highlight");
+            ui.draggable.position({
+                my: "center",
+                at: "center",
+                of: $this,
+                using: function(pos) {
+                    $(this).animate(pos, "slow", "linear");
+                }
+            });
+            var draggableId = ui.draggable.attr("id");
+            var droppableId = $(this).attr("id");
+            console.log(draggableId + " dropped into " + droppableId)
         }
     });
 };
@@ -41,10 +44,12 @@ function loadPortraits() {
         url: '/scripts/go/listDir',
         type: 'post',
         dataType: 'text',
-        data : { dir_path: dir},
-        success : function(response) {
+        data: {
+            dir_path: dir
+        },
+        success: function(response) {
             imgs = response.split(",");
-            for(i = 0; i < imgs.length; i++){
+            for (i = 0; i < imgs.length; i++) {
                 loadImage(dir, imgs[i]);
             }
             makeDroppable();

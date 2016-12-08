@@ -24,7 +24,6 @@ body {
     font: 24px Helvetica;
     background: #999999;
 }
-
 #main {
     min-height: 600px;
     margin: 0px;
@@ -32,7 +31,6 @@ body {
     display: flex;
     flex-flow: row;
 }
-
 #bans {
     min-height: 120px;
     margin: 0px;
@@ -40,8 +38,6 @@ body {
     display: flex;
     flex-flow: row;
 }
-
-
 #bans > team1bans {
     margin: 4px;
     padding: 5px;
@@ -57,7 +53,6 @@ body {
     -webkit-justify-content: center;
     justify-content: center;
 }
-
 #bans > team2bans {
     margin: 4px;
     padding: 5px;
@@ -73,8 +68,6 @@ body {
     -webkit-justify-content: center;
     justify-content: center;
 }
-
-
 #main > championList {
     margin: 4px;
     padding: 5px;
@@ -92,7 +85,6 @@ body {
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
 }
-
 #main > team1picks {
     margin: 4px;
     padding: 5px;
@@ -110,7 +102,6 @@ body {
     -webkit-justify-content: center;
     justify-content: center;
 }
-
 #main > team2picks {
     margin: 4px;
     padding: 5px;
@@ -128,7 +119,6 @@ body {
     -webkit-justify-content: center;
     justify-content: center;
 }
-
 header {
     display: block;
     margin: 4px;
@@ -138,7 +128,6 @@ header {
     border-radius: 7pt;
     background: #ffeebb;
 }
-
 footer {
     display: block;
     margin: 4px;
