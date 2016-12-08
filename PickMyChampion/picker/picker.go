@@ -10,9 +10,9 @@ import (
 )
 
 func init() {
-	http.Handle("/picker/", http.StripPrefix("/picker/", http.FileServer(http.Dir("picker/templates"))))
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("picker/templates"))))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.Handle("/scripts/php", http.StripPrefix("/scripts/php", http.FileServer(http.Dir("picker/scripts/php"))))
+	http.Handle("/scripts/js/", http.StripPrefix("/scripts/js/", http.FileServer(http.Dir("picker/scripts/js"))))
 	http.HandleFunc("/scripts/go/", goScriptHandler)
 }
 
