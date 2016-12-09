@@ -3,3 +3,7 @@ __pycache__/
 .idea
 *.py[cod]
 riotAPIkey.txt
+PickMyChampion/pkg/
+PickMyChampion/src/github.com/
+PickMyChampion/src/golang.org/
+PickMyChampion/src/google.golang.org/
