@@ -54,30 +54,31 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if dir == "" {
-		http.Error(w, "Could not find dir_path in the form body.", http.StatusNotFound)
+		http.Error(w, "Could not find dir_path in the form body.", http.StatusInternalServerError)
 		return
 	}
 	if !strings.HasPrefix(dir, "/") {
-		http.Error(w, "The passed dir_path does not start with \"/\".", http.StatusNotImplemented)
+		http.Error(w, "The passed dir_path does not start with \"/\".", http.StatusNotFound)
 		return
 	}
 	topLevel := strings.Split(dir, "/")[1]
 	if topLevel != "static" {
 		http.Error(w, "Content can only be listed if a child of the static directory (/static.  Don't forget the " +
 				"leading \"/\"). Passed dir: " + topLevel,
-			http.StatusNotImplemented)
+			http.StatusNotFound)
 		return
 	}
 	relative_dir := strings.TrimPrefix(filepath.FromSlash(dir), string(filepath.Separator))
 	abs, _ := filepath.Abs(filepath.Join(appPath, relative_dir))
 
 	if !strings.HasPrefix(abs, filepath.Join(appPath, "static")) {
-		http.Error(w, "Attempted to read outside the static directory.", http.StatusInternalServerError)
+		http.Error(w, "Attempted to read outside the static directory.", http.StatusNotFound)
 		return
 	}
 	files, err := ioutil.ReadDir(abs)
 	if err != nil {
-		http.Error(w, "Error reading dir " + abs + ": " + err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error reading dir " + abs + ": " + err.Error(), http.StatusNotFound)
+		return
 	}
 	for i, fn := range files {
 		if i != 0 {
