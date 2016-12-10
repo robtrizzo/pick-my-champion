@@ -2,12 +2,12 @@ package picker
 
 import (
 	"net/http"
-
-	"github.com/gorilla/mux"
 	"path/filepath"
 	"os"
+
+	"github.com/gorilla/mux"
 )
-var wd string
+var appPath string
 
 func init() {
 	http.Handle("/", makeRouter("."))
@@ -15,20 +15,12 @@ func init() {
 
 func makeRouter(parentPath string) *mux.Router {
 	r := mux.NewRouter()
-	wd, _ = os.Getwd()
-	wd = filepath.Join(wd, parentPath)
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(wd, "static")))))
-	r.HandleFunc("/scripts/{lang}/{func}", scriptHandler)
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(filepath.Join(wd, "templates")))))
+	appPath, _ = os.Getwd()
+	appPath = filepath.Join(appPath, parentPath)
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(filepath.Join(appPath, "static")))))
+	r.HandleFunc("/scripts/js/{func}", jsScriptHandler)
+	r.HandleFunc("/scripts/go/{func}", goScriptHandler)
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(filepath.Join(appPath, "templates")))))
 	return r
 }
 
-func scriptHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	lang := params["lang"]
-	if lang == "go" {
-		goScriptHandler(w, r)
-	} else if lang == "js"{
-		jsScriptHandler(w, r)
-	}
-}

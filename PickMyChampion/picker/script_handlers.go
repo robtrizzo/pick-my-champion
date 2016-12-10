@@ -6,14 +6,16 @@ import (
 	"path/filepath"
 	"io/ioutil"
 	"fmt"
+	"path"
+	"encoding/json"
+	"bytes"
 
 	"github.com/gorilla/mux"
-	"path"
 )
 
 
 func jsScriptHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, path.Join(".", r.RequestURI))
+	http.ServeFile(w, r, path.Join(appPath, r.URL.String()))
 }
 
 
@@ -33,9 +35,24 @@ func goScriptHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
 func listDir(w http.ResponseWriter, r *http.Request) {
 	dir := r.FormValue("dir_path")
-	//fmt.Fprint(w, r.Form)
+	if dir == "" {
+		// If we couldn't find the value from the form, look in the straight up body
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(r.Body)
+		newStr := buf.String()
+		var varmap map[string]interface{}
+		err := json.Unmarshal([]byte(newStr), &varmap)
+		if err != nil {
+			http.Error(w, "Error decoding the dir_path from the http request body: " + err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer r.Body.Close()
+		dir = varmap["dir_path"].(string)
+	}
+
 
 	if dir == "" {
 		http.Error(w, "Could not find dir_path in the form body.", http.StatusNotFound)
@@ -52,16 +69,16 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 			http.StatusNotImplemented)
 		return
 	}
-	final_dir := strings.TrimPrefix(filepath.FromSlash(dir), string(filepath.Separator))
-	abs, _ := filepath.Abs(final_dir)
+	relative_dir := strings.TrimPrefix(filepath.FromSlash(dir), string(filepath.Separator))
+	abs, _ := filepath.Abs(filepath.Join(appPath, relative_dir))
 
-	if !strings.HasPrefix(abs, filepath.Join(wd, "static")) {
+	if !strings.HasPrefix(abs, filepath.Join(appPath, "static")) {
 		http.Error(w, "Attempted to read outside the static directory.", http.StatusInternalServerError)
 		return
 	}
-	files, err := ioutil.ReadDir(final_dir)
+	files, err := ioutil.ReadDir(abs)
 	if err != nil {
-		http.Error(w, "Error reading dir " + final_dir + ": " + err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error reading dir " + abs + ": " + err.Error(), http.StatusInternalServerError)
 	}
 	for i, fn := range files {
 		if i != 0 {

@@ -4,10 +4,9 @@ import (
 	"testing"
 	"net/http"
 	"net/http/httptest"
+	"bytes"
 
 	"google.golang.org/appengine/aetest"
-	"fmt"
-	"os"
 )
 
 func TestScriptHandler(t *testing.T) {
@@ -17,13 +16,10 @@ func TestScriptHandler(t *testing.T) {
 	}
 	defer inst.Close()
 
-	cwd, _:= os.Getwd()
-	fmt.Printf("cwd: %s", cwd)
-	//form := url.Values{}
-	//form.Add("dir_path", "/static/img/champion-portraits/")
+	var jsonStr = []byte(`{"dir_path":"/static/img/champion-portraits/"}`)
 
-	//b := bytes.NewBufferString(form.Encode())
-	req, err := http.NewRequest("POST", "/scripts/go/listDir/", nil)
+	req, err := http.NewRequest("GET", "/scripts/go/listDir", bytes.NewBuffer(jsonStr))
+	req.Header.Add("content-type", "application/json")
 	if err != nil {
 		t.Errorf("Error making a request to /scripts/go/listDir/: %s", err.Error())
 		t.Fail()
@@ -31,7 +27,6 @@ func TestScriptHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 	r := makeRouter("../")
 	r.ServeHTTP(rec, req)
-	//fmt.Print(rec.Body)
 
 	if 200 != rec.Code {
 		t.Errorf("Received error code %s.", rec.Code)
