@@ -15,7 +15,7 @@ import (
 
 
 func jsScriptHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, path.Join(appPath, r.URL.String()))
+	http.ServeFile(w, r, path.Join(appPath, r.URL.Path))
 }
 
 
@@ -52,7 +52,6 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		dir = varmap["dir_path"].(string)
 	}
-
 
 	if dir == "" {
 		http.Error(w, "Could not find dir_path in the form body.", http.StatusNotFound)
