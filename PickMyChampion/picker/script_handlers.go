@@ -1,17 +1,25 @@
-package goscripts
+package picker
 
 import (
 	"net/http"
 	"strings"
 	"path/filepath"
-	"os"
 	"io/ioutil"
 	"fmt"
+
+	"github.com/gorilla/mux"
+	"path"
 )
 
-func ScriptHandler(w http.ResponseWriter, r *http.Request) {
-	base := filepath.Base(r.RequestURI)
 
+func jsScriptHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, path.Join(".", r.RequestURI))
+}
+
+
+func goScriptHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	base := params["func"]
 	//map the base name to a function
 	//expand this list as functions are added
 	m := map[string]func(http.ResponseWriter, *http.Request){
@@ -27,6 +35,16 @@ func ScriptHandler(w http.ResponseWriter, r *http.Request) {
 
 func listDir(w http.ResponseWriter, r *http.Request) {
 	dir := r.FormValue("dir_path")
+	//fmt.Fprint(w, r.Form)
+
+	if dir == "" {
+		http.Error(w, "Could not find dir_path in the form body.", http.StatusNotFound)
+		return
+	}
+	if !strings.HasPrefix(dir, "/") {
+		http.Error(w, "The passed dir_path does not start with \"/\".", http.StatusNotImplemented)
+		return
+	}
 	topLevel := strings.Split(dir, "/")[1]
 	if topLevel != "static" {
 		http.Error(w, "Content can only be listed if a child of the static directory (/static.  Don't forget the " +
@@ -36,13 +54,13 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 	}
 	final_dir := strings.TrimPrefix(filepath.FromSlash(dir), string(filepath.Separator))
 	abs, _ := filepath.Abs(final_dir)
-	cwd, _ := os.Getwd()
-	if !strings.HasPrefix(abs, filepath.Join(cwd, "static")) {
+
+	if !strings.HasPrefix(abs, filepath.Join(wd, "static")) {
 		http.Error(w, "Attempted to read outside the static directory.", http.StatusInternalServerError)
 		return
 	}
 	files, err := ioutil.ReadDir(final_dir)
-	if err != nil{
+	if err != nil {
 		http.Error(w, "Error reading dir " + final_dir + ": " + err.Error(), http.StatusInternalServerError)
 	}
 	for i, fn := range files {
