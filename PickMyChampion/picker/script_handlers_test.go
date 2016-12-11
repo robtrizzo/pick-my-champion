@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"path"
 
 	"google.golang.org/appengine/aetest"
 )
@@ -24,6 +25,37 @@ func startAppEngine() {
 	}
 	defer inst.Close()
 }
+
+
+func TestGoChampionDropped(t *testing.T) {
+	makeChampionDroppedCall("Aatrox", "team1pick1", http.StatusOK, "", t)
+	makeChampionDroppedCall("Aatrox", "", http.StatusInternalServerError, "", t)
+	makeChampionDroppedCall("", "team1pick1", http.StatusInternalServerError, "", t)
+
+	jsonStr := "{\"champion_name\":\"Aatrox\"}"
+	makeGoCall(jsonStr, "championDropped", http.StatusInternalServerError, "", t)
+
+	jsonStr = "{\"droppable_name\":\"team1pick1\"}"
+	makeGoCall(jsonStr, "championDropped", http.StatusInternalServerError, "", t)
+
+	// No comma
+	jsonStr = "{\"champion_name\":\"Aatrox\" \"droppable_name\":\"team1pick1\"}"
+	makeGoCall(jsonStr, "championDropped", http.StatusInternalServerError, "", t)
+
+	// A comma but no second field
+	jsonStr = "{\"champion_name\":\"Aatrox\",}"
+	makeGoCall(jsonStr, "championDropped", http.StatusInternalServerError, "", t)
+
+	// No first field
+	jsonStr = "{,\"droppable_name\":\"team1pick1\"}"
+	makeGoCall(jsonStr, "championDropped", http.StatusInternalServerError, "", t)
+}
+
+func makeChampionDroppedCall(championName, droppableName string, expectedCode int, expectedString string, t *testing.T) {
+	jsonStr := "{\"champion_name\":\"" + championName + "\", \"droppable_name\":\"" + droppableName + "\"}"
+	makeGoCall(jsonStr, "championDropped", expectedCode, expectedString, t)
+}
+
 
 func TestBadGoScript(t *testing.T) {
 	makeGETRequest("/scripts/go/someBadFunc", http.StatusNotFound, "", t)
@@ -62,7 +94,7 @@ func makeGETRequest(path string, expectedCode int, expectedString string, t *tes
 	checkRecorder(expectedCode, expectedString, rec, t)
 }
 
-func TestGOScriptHandler(t *testing.T) {
+func TestGoListDirHandler(t *testing.T) {
 	makeListDirCall("/static/img/champion-portraits/", http.StatusOK, "Aatrox", t)
 	makeListDirCall("/static/img/", http.StatusOK, "champion-portraits", t)
 	makeListDirCall("static/img/", http.StatusNotFound, "", t)
@@ -73,44 +105,29 @@ func TestGOScriptHandler(t *testing.T) {
 	makeListDirCall("/static/img/low/bad/subpath", http.StatusNotFound, "", t)
 	makeListDirCall("/static/../../", http.StatusNotFound, "", t)
 	makeListDirCall("/app.yaml", http.StatusNotFound, "", t)
+	makeListDirCall("", http.StatusInternalServerError, "", t)
 
-	// Test empty dir path in JSON
-	var jsonStr = []byte("{\"dir_path\":\"\"}")
-
-	req, err := http.NewRequest("POST", "/scripts/go/listDir", bytes.NewBuffer(jsonStr))
-	req.Header.Add("content-type", "application/json")
-	if err != nil {
-		t.Errorf("Error making a request to /scripts/go/listDir/: %s", err.Error())
-		t.Fail()
-	}
-	rec := httptest.NewRecorder()
-	r := makeRouter("../")
-	r.ServeHTTP(rec, req)
-
-	checkRecorder(http.StatusInternalServerError, "", rec, t)
-
-	// Test malformed JSON (missing ending }
-	jsonStr = []byte("{\"dir_path\":\"\"")
-
-	req, err = http.NewRequest("POST", "/scripts/go/listDir", bytes.NewBuffer(jsonStr))
-	req.Header.Add("content-type", "application/json")
-	if err != nil {
-		t.Errorf("Error making a request to /scripts/go/listDir/: %s", err.Error())
-		t.Fail()
-	}
-	rec = httptest.NewRecorder()
-	r.ServeHTTP(rec, req)
-
-	checkRecorder(http.StatusInternalServerError, "", rec, t)
+	// Test malformed JSON (missing ending })
+	makeGoCall("{\"dir_path\":\"\"", "listDir", http.StatusInternalServerError, "", t)
+	// Test malformed JSON (empty JSON)
+	makeGoCall("{}", "listDir", http.StatusInternalServerError, "", t)
 }
 
 func makeListDirCall(path string, expectedCode int, expectedString string, t *testing.T) {
-	var jsonStr = []byte("{\"dir_path\":\"" + path + "\"}")
+	jsonStr := "{\"dir_path\":\"" + path + "\"}"
+	makeGoCall(jsonStr, "listDir", expectedCode, expectedString, t)
+}
 
-	req, err := http.NewRequest("POST", "/scripts/go/listDir", bytes.NewBuffer(jsonStr))
+
+func makeGoCall(json, funcName string, expectedCode int, expectedString string, t *testing.T) {
+	var jsonBytes = []byte(json)
+
+	reqPath := path.Join("/scripts/go", funcName)
+
+	req, err := http.NewRequest("POST", reqPath, bytes.NewBuffer(jsonBytes))
 	req.Header.Add("content-type", "application/json")
 	if err != nil {
-		t.Errorf("Error making a request to /scripts/go/listDir/: %s", err.Error())
+		t.Errorf("Error making a request to /%s: %s", reqPath, err.Error())
 		t.Fail()
 	}
 	rec := httptest.NewRecorder()

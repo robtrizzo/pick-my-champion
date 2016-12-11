@@ -31,9 +31,20 @@ function makeDroppable() {
                     $(this).animate(pos, "slow", "linear");
                 }
             });
-            var draggableId = ui.draggable.attr("id");
+            var championId = ui.draggable.attr("id");
             var droppableId = $(this).attr("id");
-            console.log(draggableId + " dropped into " + droppableId)
+            $.ajax({
+                url: '/scripts/go/championDropped',
+                type: 'post',
+                dataType: 'text',
+                data: {
+                    champion_name: championId,
+                    droppable_name: droppableId
+                },
+                success: function(response) {
+                    console.log(response)
+                }
+            });
         }
     });
 };
@@ -50,7 +61,7 @@ function loadPortraits() {
         success: function(response) {
             imgs = response.split(",");
             for (i = 0; i < imgs.length; i++) {
-                loadImage(dir, imgs[i]);
+                loadImage(dir, imgs[i], i);
             }
             makeDroppable();
             makeDraggable();
@@ -58,9 +69,10 @@ function loadPortraits() {
     });
 };
 
-function loadImage(dir, img_fn) {
+function loadImage(dir, img_fn, champion_num) {
     var div = document.createElement("div");
     div.className = "championDropArea";
+    div.id = "champion_default" + champion_num
     var img = document.createElement("img");
     img.src = dir + "/" + img_fn;
     img.id = img_fn.substr(0, img_fn.lastIndexOf('.'));;
