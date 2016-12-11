@@ -1,23 +1,16 @@
 package picker
 
 import (
-	"net/http"
-	"strings"
-	"path/filepath"
-	"io/ioutil"
-	"fmt"
-	"path"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
-
-
-func jsScriptHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, path.Join(appPath, r.URL.Path))
-}
-
 
 func goScriptHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -35,7 +28,6 @@ func goScriptHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func listDir(w http.ResponseWriter, r *http.Request) {
 	dir := r.FormValue("dir_path")
 	if dir == "" {
@@ -46,7 +38,7 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 		var varmap map[string]interface{}
 		err := json.Unmarshal([]byte(newStr), &varmap)
 		if err != nil {
-			http.Error(w, "Error decoding the dir_path from the http request body: " + err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error decoding the dir_path from the http request body: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 		defer r.Body.Close()
@@ -63,8 +55,8 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 	}
 	topLevel := strings.Split(dir, "/")[1]
 	if topLevel != "static" {
-		http.Error(w, "Content can only be listed if a child of the static directory (/static.  Don't forget the " +
-				"leading \"/\"). Passed dir: " + topLevel,
+		http.Error(w, "Content can only be listed if a child of the static directory (/static.  Don't forget the "+
+			"leading \"/\"). Passed dir: "+topLevel,
 			http.StatusNotFound)
 		return
 	}
@@ -77,7 +69,7 @@ func listDir(w http.ResponseWriter, r *http.Request) {
 	}
 	files, err := ioutil.ReadDir(abs)
 	if err != nil {
-		http.Error(w, "Error reading dir " + abs + ": " + err.Error(), http.StatusNotFound)
+		http.Error(w, "Error reading dir "+abs+": "+err.Error(), http.StatusNotFound)
 		return
 	}
 	for i, fn := range files {

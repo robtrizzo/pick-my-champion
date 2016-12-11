@@ -1,17 +1,17 @@
 package picker
 
 import (
-	"testing"
+	"bytes"
 	"net/http"
 	"net/http/httptest"
-	"bytes"
+	"os"
 	"strings"
+	"testing"
 
 	"google.golang.org/appengine/aetest"
-	"os"
 )
 
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	startAppEngine()
 	code := m.Run()
 	os.Exit(code)
@@ -29,13 +29,12 @@ func TestBadGoScript(t *testing.T) {
 	makeGETRequest("/scripts/go/someBadFunc", http.StatusNotFound, "", t)
 }
 
-
 func TestFileServingHandler(t *testing.T) {
 	makeGETRequest("/scripts/js/champion_areas.js", http.StatusOK, "loadPortraits", t)
 	makeGETRequest("/scripts/js/champion_areas.js/anotherdir", http.StatusNotFound, "", t)
 	makeGETRequest("/scripts/js/champion_areas", http.StatusNotFound, "", t)
 	makeGETRequest("/scripts/js/not_found", http.StatusNotFound, "", t)
-	makeGETRequest("/scripts/js/", http.StatusNotFound, "", t)
+	makeGETRequest("/scripts/js/", http.StatusOK, "champion_areas", t)
 	makeGETRequest("/scripts/js", http.StatusNotFound, "", t)
 	makeGETRequest("/", http.StatusOK, "Pick My Champion", t)
 	makeGETRequest("/picker", http.StatusNotFound, "", t)
@@ -62,7 +61,6 @@ func makeGETRequest(path string, expectedCode int, expectedString string, t *tes
 
 	checkRecorder(expectedCode, expectedString, rec, t)
 }
-
 
 func TestGOScriptHandler(t *testing.T) {
 	makeListDirCall("/static/img/champion-portraits/", http.StatusOK, "Aatrox", t)
@@ -122,7 +120,7 @@ func makeListDirCall(path string, expectedCode int, expectedString string, t *te
 	checkRecorder(expectedCode, expectedString, rec, t)
 }
 
-func checkReturnCode(expectedCode int, recorder *httptest.ResponseRecorder, t *testing.T ){
+func checkReturnCode(expectedCode int, recorder *httptest.ResponseRecorder, t *testing.T) {
 	if expectedCode != -1 && expectedCode != recorder.Code {
 		t.Errorf("Received error code %s.", recorder.Code)
 		t.Errorf("Received body: %s", recorder.Body)
@@ -130,8 +128,7 @@ func checkReturnCode(expectedCode int, recorder *httptest.ResponseRecorder, t *t
 	}
 }
 
-
-func checkBody(expectedString string, recorder *httptest.ResponseRecorder, t *testing.T ){
+func checkBody(expectedString string, recorder *httptest.ResponseRecorder, t *testing.T) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(recorder.Body)
 	if expectedString != "" && !strings.Contains(buf.String(), expectedString) {
@@ -141,8 +138,7 @@ func checkBody(expectedString string, recorder *httptest.ResponseRecorder, t *te
 	}
 }
 
-func checkRecorder(expectedCode int, expectedString string, recorder *httptest.ResponseRecorder, t *testing.T){
+func checkRecorder(expectedCode int, expectedString string, recorder *httptest.ResponseRecorder, t *testing.T) {
 	checkReturnCode(expectedCode, recorder, t)
 	checkBody(expectedString, recorder, t)
 }
-
