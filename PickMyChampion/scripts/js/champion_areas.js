@@ -9,30 +9,33 @@ function makeDraggable() {
         scroll: false,
         revert: 'invalid',
         stack: false,
-        cursor: "pointer",
-        drag: function(event, ui) {
-            $(".championDropArea").removeClass("highlight");
-        }
+        cursor: "pointer"
     });
 };
 
 function makeDroppable() {
     $(".championDropArea").droppable({
-        accept: ".championPortrait",
+        //accept: ".championPortrait",
+        accept: function(elem) {
+            if($(this).hasClass("hasChampion")){
+                return false;
+            }
+            return true;
+        },
         drop: function(event, ui) {
             var $this = $(this);
-            $(".highlight").removeClass("highlight");
-            $this.addClass("highlight");
+
+            $(this).addClass("hasChampion");
+            $(ui.draggable).parent().removeClass("hasChampion")
+            $(ui.draggable).appendTo($(this));
             ui.draggable.position({
                 my: "center",
                 at: "center",
-                of: $this,
-                using: function(pos) {
-                    $(this).animate(pos, "slow", "linear");
-                }
+                of: $this
             });
             var championId = ui.draggable.attr("id");
             var droppableId = $(this).attr("id");
+
             $.ajax({
                 url: '/scripts/go/championDropped',
                 type: 'post',
@@ -71,7 +74,7 @@ function loadPortraits() {
 
 function loadImage(dir, img_fn, champion_num) {
     var div = document.createElement("div");
-    div.className = "championDropArea";
+    div.className = "championDropArea hasChampion";
     div.id = "champion_default" + champion_num
     var img = document.createElement("img");
     img.src = dir + "/" + img_fn;
