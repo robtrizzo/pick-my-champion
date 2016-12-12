@@ -9,13 +9,19 @@ function makeDraggable() {
         scroll: false,
         revert: 'invalid',
         stack: false,
-        cursor: "pointer"
+        cursor: "pointer",
+
+        start: function(event, ui) {
+            $(this).css("z-index", 10000);
+        },
+        stop: function(event, ui) {
+            $(this).css("z-index", 3);
+        }
     });
 };
 
 function makeDroppable() {
     $(".championDropArea").droppable({
-        //accept: ".championPortrait",
         accept: function(elem) {
             if($(this).hasClass("hasChampion")){
                 return false;
@@ -80,8 +86,8 @@ function loadImage(dir, img_fn, champion_num) {
     img.src = dir + "/" + img_fn;
     img.id = img_fn.substr(0, img_fn.lastIndexOf('.'));;
     img.className = "championPortrait";
+    img.title = img.id
     var src = document.getElementById("championList");
     div.appendChild(img);
     src.appendChild(div);
-
 }

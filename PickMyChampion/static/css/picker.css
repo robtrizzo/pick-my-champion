@@ -4,6 +4,7 @@
     width: 90px;
     height: 90px;
     border: 1px solid red;
+    z-index: 3;
 }
 .championDropArea {
     width: 90px;
@@ -12,6 +13,7 @@
     margin: 2px;
     border: 1px solid #000;
     outline: 1px solid transparent
+    z-index: 1;
 }
 img {
     max-width: 100%;
@@ -20,9 +22,11 @@ img {
 body {
     font: 24px Helvetica;
     background: #999999;
+    z-index: 0;
 }
 #main {
     min-height: 600px;
+    max-height: 600px;
     margin: 0px;
     padding: 0px;
     display: flex;
@@ -81,6 +85,9 @@ body {
     justify-content: center;
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
+    overflow: auto;
+    position: relative
+    z-index: 2;
 }
 #main > team1picks {
     margin: 4px;
@@ -98,6 +105,7 @@ body {
     align-items: center;
     -webkit-justify-content: center;
     justify-content: center;
+    z-index: 0;
 }
 #main > team2picks {
     margin: 4px;
@@ -115,6 +123,7 @@ body {
     align-items: center;
     -webkit-justify-content: center;
     justify-content: center;
+    z-index: 0;
 }
 header {
     display: block;
@@ -133,4 +142,18 @@ footer {
     border: 1px solid #eebb55;
     border-radius: 7pt;
     background: #ffeebb;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
